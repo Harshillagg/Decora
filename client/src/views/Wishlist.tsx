@@ -5,7 +5,8 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux"
 import { fetchWishlist, removeFromWishlist } from "../store/slices/wishlistSlice"
-import { Heart, ShoppingCart, Trash2, Star, Share2, Filter, Grid, List, ArrowRight, Package } from "lucide-react"
+import { addToCart } from "../store/slices/cartSlice"
+import { Heart, ShoppingCart, Trash2, Star, Share2, Filter, Grid, List, ArrowRight, Package } from 'lucide-react'
 import Button from "../components/ui/Button"
 import LoadingSpinner from "../components/ui/LoadingSpinner"
 import { toast } from "react-hot-toast"
@@ -52,7 +53,7 @@ const Wishlist: React.FC = () => {
   }
 
   const handleAddAllToCart = async () => {
-    const availableItems = items.filter((item) => item.inStock)
+    const availableItems = items.filter((item) => item.stock > 0)
 
     for (const item of availableItems) {
       try {
@@ -152,7 +153,7 @@ const Wishlist: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            {items.some((item) => item.inStock) && (
+            {items.some((item) => item.stock > 0) && (
               <Button onClick={handleAddAllToCart} icon={<ShoppingCart className="w-4 h-4" />}>
                 Add All to Cart
               </Button>
@@ -235,8 +236,8 @@ const Wishlist: React.FC = () => {
           }`}
         >
           {filteredAndSortedItems.map((product) => {
-            const discountPercentage = product.originalPrice
-              ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+            const discountPercentage = product.price && product.discountPrice
+              ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
               : 0
 
             if (viewMode === "list") {
@@ -258,7 +259,7 @@ const Wishlist: React.FC = () => {
 
                       {/* Badges */}
                       <div className="absolute top-4 left-4 flex flex-col space-y-2">
-                        {!product.inStock && (
+                        {product.stock === 0 && (
                           <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
                             Out of Stock
                           </span>
@@ -308,17 +309,19 @@ const Wishlist: React.FC = () => {
                           ))}
                         </div>
                         <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">
-                          {product.rating} ({product.reviewCount} reviews)
+                          {product.rating} ({product.reviews.length} reviews)
                         </span>
                       </div>
 
                       {/* Price and Actions */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <span className="text-2xl font-bold text-gray-900 dark:text-white">${product.price}</span>
-                          {product.originalPrice && product.originalPrice > product.price && (
+                          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                            ${product.discountPrice || product.price}
+                          </span>
+                          {product.discountPrice && product.price > product.discountPrice && (
                             <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                              ${product.originalPrice}
+                              ${product.price}
                             </span>
                           )}
                         </div>
@@ -338,11 +341,11 @@ const Wishlist: React.FC = () => {
                             <Button
                               onClick={() => handleAddToCart(product._id)}
                               loading={addingToCart.has(product._id)}
-                              disabled={!product.inStock}
+                              disabled={product.stock === 0}
                               size="sm"
                               icon={<ShoppingCart className="w-4 h-4" />}
                             >
-                              {product.inStock ? "Add to Cart" : "Out of Stock"}
+                              {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
                             </Button>
                           )}
                         </div>
@@ -370,7 +373,7 @@ const Wishlist: React.FC = () => {
 
                   {/* Badges */}
                   <div className="absolute top-4 left-4 flex flex-col space-y-2">
-                    {!product.inStock && (
+                    {product.stock === 0 && (
                       <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
                         Out of Stock
                       </span>
@@ -408,12 +411,12 @@ const Wishlist: React.FC = () => {
                       <Button
                         onClick={() => handleAddToCart(product._id)}
                         loading={addingToCart.has(product._id)}
-                        disabled={!product.inStock}
+                        disabled={product.stock === 0}
                         fullWidth
                         size="sm"
                         icon={<ShoppingCart className="w-4 h-4" />}
                       >
-                        {product.inStock ? "Add to Cart" : "Out of Stock"}
+                        {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
                       </Button>
                     )}
                   </div>
@@ -442,16 +445,18 @@ const Wishlist: React.FC = () => {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">({product.reviewCount})</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">({product.reviews.length})</span>
                   </div>
 
                   {/* Price */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price}</span>
-                      {product.originalPrice && product.originalPrice > product.price && (
+                      <span className="text-xl font-bold text-gray-900 dark:text-white">
+                        ${product.discountPrice || product.price}
+                      </span>
+                      {product.discountPrice && product.price > product.discountPrice && (
                         <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                          ${product.originalPrice}
+                          ${product.price}
                         </span>
                       )}
                     </div>

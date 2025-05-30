@@ -5,7 +5,8 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux"
 import { addToWishlist, removeFromWishlist } from "../../store/slices/wishlistSlice"
-import { Star, Heart, ShoppingCart, Eye, Share2 } from "lucide-react"
+import { addToCart } from "../../store/slices/cartSlice"
+import { Star, Heart, ShoppingCart, Eye, Share2 } from 'lucide-react'
 import type { Product } from "../../store/slices/cartSlice"
 import Button from "../ui/Button"
 import { toast } from "react-hot-toast"
@@ -24,8 +25,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
   const [isAddingToCart, setIsAddingToCart] = useState(false)
 
   const isInWishlist = wishlistItems.some((item) => item._id === product._id)
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = product.price && product.discountPrice
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
     : 0
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -91,6 +92,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
     }
   }
 
+  const displayPrice = product.discountPrice || product.price
+  const originalPrice = product.discountPrice ? product.price : null
+
   if (viewMode === "list") {
     return (
       <Link
@@ -101,7 +105,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
           {/* Image */}
           <div className="relative md:w-64 h-48 md:h-auto overflow-hidden">
             <img
-              src={product.images[currentImageIndex] || "/placeholder.svg?height=200&width=300"}
+              src={product.images[0] || "/placeholder.svg?height=200&width=300"}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               onMouseEnter={() => {
@@ -114,7 +118,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
 
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col space-y-2">
-              {!product.inStock && (
+              {product.stock === 0 && (
                 <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">Out of Stock</span>
               )}
               {discountPercentage > 0 && (
@@ -122,7 +126,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
                   -{discountPercentage}%
                 </span>
               )}
-              {product.tags.includes("new") && (
+              {product.isNewProduct && (
                 <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">New</span>
               )}
             </div>
@@ -172,17 +176,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
                 ))}
               </div>
               <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">
-                {product.rating} ({product.reviewCount} reviews)
+                {product.rating} ({product.reviews.length} reviews)
               </span>
             </div>
 
             {/* Price and Actions */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">${product.price}</span>
-                {product.originalPrice && product.originalPrice > product.price && (
+                <span className="text-2xl font-bold text-gray-900 dark:text-white">${displayPrice}</span>
+                {originalPrice && (
                   <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                    ${product.originalPrice}
+                    ${originalPrice}
                   </span>
                 )}
               </div>
@@ -194,11 +198,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
                 <Button
                   onClick={handleAddToCart}
                   loading={isAddingToCart}
-                  disabled={!product.inStock}
+                  disabled={product.stock === 0}
                   size="sm"
                   icon={<ShoppingCart className="w-4 h-4" />}
                 >
-                  {product.inStock ? "Add to Cart" : "Out of Stock"}
+                  {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
                 </Button>
               </div>
             </div>
@@ -229,7 +233,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
 
         {/* Badges */}
         <div className="absolute top-4 left-4 flex flex-col space-y-2">
-          {!product.inStock && (
+          {product.stock === 0 && (
             <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">Out of Stock</span>
           )}
           {discountPercentage > 0 && (
@@ -237,7 +241,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
               -{discountPercentage}%
             </span>
           )}
-          {product.tags.includes("new") && (
+          {product.isNewProduct && (
             <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-medium">New</span>
           )}
         </div>
@@ -265,12 +269,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
           <Button
             onClick={handleAddToCart}
             loading={isAddingToCart}
-            disabled={!product.inStock}
+            disabled={product.stock === 0}
             fullWidth
             size="sm"
             icon={<ShoppingCart className="w-4 h-4" />}
           >
-            {product.inStock ? "Add to Cart" : "Out of Stock"}
+            {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
           </Button>
         </div>
       </div>
@@ -293,15 +297,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = "grid" })
               />
             ))}
           </div>
-          <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">({product.reviewCount})</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">({product.reviews.length})</span>
         </div>
 
         {/* Price */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price}</span>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">${product.originalPrice}</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">${displayPrice}</span>
+            {originalPrice && (
+              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">${originalPrice}</span>
             )}
           </div>
         </div>

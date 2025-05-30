@@ -32,7 +32,11 @@ const Cart: React.FC = () => {
     setIsLoading(true)
 
     try{
-        const response = await axios.get("http://localhost:8000/api/cart/get-cart")
+        const response = await axios.get("http://localhost:8000/api/cart/get-cart", {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        })
         dispatch(setCart(response.data.cart))
         toast.success("Cart fetched")
     } catch (error) {
@@ -49,7 +53,11 @@ const Cart: React.FC = () => {
 
   const handleRemove = async (itemId: string) => {
     try {
-      await axios.delete(`/api/cart/remove-from-cart/${itemId}`); // Replace with your API endpoint
+      await axios.delete(`/api/cart/remove-from-cart/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }); // Replace with your API endpoint
       dispatch(removeFromCart(itemId));
       toast.success("Item removed from cart");
     } catch (error) {
@@ -61,7 +69,11 @@ const Cart: React.FC = () => {
   // Clear cart
   const handleClearCart = async () => {
     try {
-      await axios.delete('/api/cart/clear-cart'); // Replace with your API endpoint
+      await axios.delete('/api/cart/clear-cart', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }); // Replace with your API endpoint
       dispatch(clearCart());
       toast.success('Cart cleared');
     } catch (error) {
@@ -73,7 +85,11 @@ const Cart: React.FC = () => {
   // Update quantity - example
   const handleQuantityUpdate = async (itemId: string, quantity: number) => {
     try {
-      await axios.put(`/api/cart/add-to-cart/${itemId}`, { quantity }); // Replace with your API
+      await axios.put(`/api/cart/add-to-cart/${itemId}`, { quantity },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }); // Replace with your API
       getCart(); // Re-fetch to ensure the UI is up-to-date
       toast.success('Quantity updated');
     } catch (error) {

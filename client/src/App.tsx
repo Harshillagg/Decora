@@ -10,6 +10,7 @@ import Register from "./views/Register"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import Cart from "./views/Cart"
 import Wishlist from "./views/Wishlist"
+import Products from "./views/Products"
 
 export default function App() {
   return (
@@ -23,8 +24,8 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* <Route path="/products" element={<Products />} />
-                <Route path="/products/:id" element={<ProductDetail />} /> */}
+                 <Route path="/products" element={<Products />} />
+                {/* <Route path="/products/:id" element={<ProductDetail />} /> */}
 
                 {/* Protected Routes */}
                  <Route
