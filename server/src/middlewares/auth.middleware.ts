@@ -32,7 +32,7 @@ export const verifyJwt = asyncHandler( async (req:CustomRequest, res:Response, n
     }
 })
 
-export const verifyAdmin = (req:CustomRequest, res:Response, next: NextFunction) => {
+export const verifyAdmin = asyncHandler( async (req:CustomRequest, res:Response, next: NextFunction) => {
     if(req.user?.role !== "admin") return res.status(403).json({ message: "Forbidden" });
     next();
-}
+})

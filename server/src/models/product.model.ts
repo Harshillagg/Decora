@@ -112,7 +112,6 @@ const productSchema = new Schema<ProductProps>(
 
 // Create indexes for better query performance
 productSchema.index({ name: "text", description: "text" });
-productSchema.index({ category: 1 });
 productSchema.index({ price: 1 });
 productSchema.index({ createdAt: -1 });
 

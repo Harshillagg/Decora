@@ -26,4 +26,8 @@ import wishlistRouter from "./routes/wishlist.route";
 
 app.use("/api/wishlist", wishlistRouter)
 
+import productRouter from "./routes/product.routes";
+
+app.use("/api/products", productRouter)
+
 export default app

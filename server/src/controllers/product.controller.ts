@@ -1,11 +1,9 @@
 import type { Request, Response } from "express"
 import Product from "../models/product.model"
-import { validationResult } from "express-validator"
+import asyncHandler from "../utils/asyncHandler"
+import CustomRequest from "../types/customRequest"
 
-// @desc    Get all products
-// @route   GET /api/products
-// @access  Public
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = asyncHandler( async (req: CustomRequest, res: Response) => {
   try {
     const pageSize = Number(req.query.pageSize) || 10
     const page = Number(req.query.page) || 1
@@ -50,12 +48,9 @@ export const getProducts = async (req: Request, res: Response) => {
     console.error("Get products error:", error)
     res.status(500).json({ message: "Server error" })
   }
-}
+})
 
-// @desc    Get product by ID
-// @route   GET /api/products/:id
-// @access  Public
-export const getProductById = async (req: Request, res: Response) => {
+export const getProductById = asyncHandler( async (req: CustomRequest, res: Response) => {
   try {
     const product = await Product.findById(req.params.id)
 
@@ -68,16 +63,9 @@ export const getProductById = async (req: Request, res: Response) => {
     console.error("Get product error:", error)
     res.status(500).json({ message: "Server error" })
   }
-}
+})
 
-// @desc    Create a product
-// @route   POST /api/products
-// @access  Private/Admin
-export const createProduct = async (req: Request, res: Response) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
+export const createProduct = asyncHandler( async (req: CustomRequest, res: Response) => {
 
   try {
     const { name, description, price, discountPrice, images, category, stock, isNew, isFeatured, isSale } = req.body
@@ -103,16 +91,9 @@ export const createProduct = async (req: Request, res: Response) => {
     console.error("Create product error:", error)
     res.status(500).json({ message: "Server error" })
   }
-}
+})
 
-// @desc    Update a product
-// @route   PUT /api/products/:id
-// @access  Private/Admin
-export const updateProduct = async (req: Request, res: Response) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
+export const updateProduct = asyncHandler( async (req: CustomRequest, res: Response) => {
 
   try {
     const { name, description, price, discountPrice, images, category, stock, isNew, isFeatured, isSale } = req.body
@@ -140,12 +121,9 @@ export const updateProduct = async (req: Request, res: Response) => {
     console.error("Update product error:", error)
     res.status(500).json({ message: "Server error" })
   }
-}
+})
 
-// @desc    Delete a product
-// @route   DELETE /api/products/:id
-// @access  Private/Admin
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = asyncHandler( async (req: CustomRequest, res: Response) => {
   try {
     const product = await Product.findById(req.params.id)
 
@@ -159,50 +137,47 @@ export const deleteProduct = async (req: Request, res: Response) => {
     console.error("Delete product error:", error)
     res.status(500).json({ message: "Server error" })
   }
-}
+})
 
-// @desc    Create new review
-// @route   POST /api/products/:id/reviews
-// @access  Private
-export const createProductReview = async (req: Request, res: Response) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
+// export const createProductReview = asyncHandler( async (req: CustomRequest, res: Response) => {
 
-  try {
-    const { rating, comment } = req.body
+//   try {
+//     if (!req.user) {
+//       return res.status(401).json({ message: "Unauthorized" })
+//     }
 
-    const product = await Product.findById(req.params.id)
+//     const { rating, comment } = req.body
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" })
-    }
+//     const product = await Product.findById(req.params.id)
 
-    // Check if user already reviewed this product
-    const alreadyReviewed = product.reviews.find((r) => r.userId.toString() === req.user._id.toString())
+//     if (!product) {
+//       return res.status(404).json({ message: "Product not found" })
+//     }
 
-    if (alreadyReviewed) {
-      return res.status(400).json({ message: "Product already reviewed" })
-    }
+//     // Check if user already reviewed this product
+//     const alreadyReviewed = product.reviews.find((r) => r.userId.toString() === req.user._id.toString())
 
-    const review = {
-      userId: req.user._id,
-      userName: req.user.name,
-      rating: Number(rating),
-      comment,
-      createdAt: new Date(),
-    }
+//     if (alreadyReviewed) {
+//       return res.status(400).json({ message: "Product already reviewed" })
+//     }
 
-    product.reviews.push(review)
+//     const review = {
+//       userId: req.user._id,
+//       userName: req.user.name,
+//       rating: Number(rating),
+//       comment,
+//       createdAt: new Date(),
+//     }
 
-    // Update product rating
-    product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
+//     product.reviews.push(review)
 
-    await product.save()
-    res.status(201).json({ message: "Review added" })
-  } catch (error) {
-    console.error("Create review error:", error)
-    res.status(500).json({ message: "Server error" })
-  }
-}
+//     // Update product rating
+//     product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
+
+//     await product.save()
+//     res.status(201).json({ message: "Review added" })
+//   } catch (error) {
+//     console.error("Create review error:", error)
+//     res.status(500).json({ message: "Server error" })
+//   }
+// })
