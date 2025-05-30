@@ -3,18 +3,14 @@
 import type React from "react"
 // import { useEffect } from "react"
 import { Link } from "react-router-dom"
-import { useIntersectionObserver } from "../hooks/useIntersectionObserver"
-import { ArrowRight, Star, Truck, Shield, RotateCcw, Award, ChevronRight, Play } from "lucide-react"
+import { ArrowRight, Star, Truck, Shield, RotateCcw, Award, ChevronRight } from "lucide-react"
 import Button from "../components/ui/Button"
 import SkeletonLoader from "../components/ui/SkeletonLoader"
 import { useState } from "react"
 import { useAppSelector } from "../hooks/redux"
+import HeroCarousel from "../components/HeroCarousel"
 
 const Home: React.FC = () => {
-
-  const { elementRef: heroRef, isIntersecting: heroInView } = useIntersectionObserver()
-  const { elementRef: featuresRef, isIntersecting: featuresInView } = useIntersectionObserver()
-  const { elementRef: productsRef, isIntersecting: productsInView } = useIntersectionObserver()
   
   const [isLoading, setIsLoading] = useState(true);
   const featuredProducts = useAppSelector((state) => state.products.featuredProducts)
@@ -60,25 +56,25 @@ const Home: React.FC = () => {
   const categories = [
     {
       name: "Living Room",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/living-room.jpg",
       description: "Comfortable and stylish furniture",
       href: "/products?category=living-room",
     },
     {
       name: "Bedroom",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/bedroom.jpg",
       description: "Create your perfect sanctuary",
       href: "/products?category=bedroom",
     },
     {
       name: "Kitchen",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/kitchen.jpg",
       description: "Modern kitchen essentials",
       href: "/products?category=kitchen",
     },
     {
       name: "Office",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/office.jpg",
       description: "Productive workspace solutions",
       href: "/products?category=office",
     },
@@ -88,81 +84,20 @@ const Home: React.FC = () => {
     <div className="min-h-screen pt-16">
       {/* Hero Section */}
       <section
-        ref={heroRef}
-        className={`relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-20 lg:py-32 transition-all duration-1000 ${
-          heroInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+        className={`relative overflow-hidden py-0  transition-all duration-1000 
+        `}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
-                  Transform Your
-                  <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Living Space
-                  </span>
-                </h1>
-                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-lg">
-                  Discover premium home decor and furniture that brings comfort, style, and personality to every room.
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="group">
-                  Shop Now
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <Button variant="outline" size="lg" className="group">
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Video
-                </Button>
-              </div>
-
-              <div className="flex items-center space-x-8 pt-8">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">10K+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Happy Customers</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">5K+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Products</div>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center space-x-1 mb-1">
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">4.9</span>
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Rating</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="relative z-10">
-                <img
-                  src="/placeholder.svg?height=600&width=500"
-                  alt="Beautiful living room"
-                  className="rounded-2xl shadow-2xl"
-                />
-              </div>
-              <div className="absolute -top-4 -right-4 w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl opacity-20"></div>
-              <div className="absolute -bottom-4 -left-4 w-full h-full bg-gradient-to-tr from-pink-400 to-orange-400 rounded-2xl opacity-20"></div>
-            </div>
-          </div>
-        </div>
+        <HeroCarousel />
       </section>
 
       {/* Features Section */}
       <section
-        ref={featuresRef}
-        className={`py-20 bg-white dark:bg-gray-800 transition-all duration-1000 delay-200 ${
-          featuresInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+        className={`py-20 bg-white dark:bg-gray-800 transition-all duration-1000 delay-200 
+        `}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Choose HomeDecor?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Choose Decora?</h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               We're committed to providing you with the best shopping experience and premium quality products.
             </p>
@@ -172,9 +107,7 @@ const Home: React.FC = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`text-center p-6 rounded-2xl bg-gray-50 dark:bg-gray-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 ${
-                  featuresInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                }`}
+                className={`text-center p-6 rounded-2xl bg-gray-50 dark:bg-gray-700 border-1 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 `}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className={`w-16 h-16 ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
@@ -207,7 +140,7 @@ const Home: React.FC = () => {
               >
                 <div className="aspect-w-4 aspect-h-3">
                   <img
-                    src={category.image || "/placeholder.svg"}
+                    src={category.image}
                     alt={category.name}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -230,10 +163,7 @@ const Home: React.FC = () => {
 
       {/* Featured Products Section */}
       <section
-        ref={productsRef}
-        className={`py-20 bg-white dark:bg-gray-800 transition-all duration-1000 delay-400 ${
-          productsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+        className={`py-20 bg-white dark:bg-gray-800 transition-all duration-1000 delay-400`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-16">
@@ -267,9 +197,7 @@ const Home: React.FC = () => {
                 <Link
                   key={product._id}
                   to={`/products/${product._id}`}
-                  className={`group bg-white dark:bg-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${
-                    productsInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                  }`}
+                  className={`group bg-white dark:bg-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 `}
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
                   <div className="relative overflow-hidden">

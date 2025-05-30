@@ -1,6 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
 export interface AddressProps {
   street: string;
@@ -19,10 +18,10 @@ export interface UserProps extends Document {
   addresses: AddressProps[];
   createdAt: Date;
   avatar: string;
-  comparePassword(candidatePassword: string): Promise<boolean>
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const addressSchema = new Schema<AddressProps>({
+export const addressSchema = new Schema<AddressProps>({
   street: {
     type: String,
     required: true,
@@ -75,7 +74,7 @@ const userSchema = new Schema<UserProps>(
     },
     addresses: [addressSchema],
     avatar: {
-      type: String
+      type: String,
     },
   },
   { timestamps: true }

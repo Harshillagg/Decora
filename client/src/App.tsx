@@ -4,26 +4,30 @@ import Navbar from "./components/Navbar"
 import Home from "./views/Home"
 import Footer from "./components/Footer"
 import ErrorPage from "./views/Error"
+import {Toaster} from 'react-hot-toast'
+import Login from "./views/Login"
+import Register from "./views/Register"
+import ProtectedRoute from "./components/auth/ProtectedRoute"
+import Cart from "./views/Cart"
+import Wishlist from "./views/Wishlist"
 
 export default function App() {
-//   useEffect(() => {
-//     dispatch(checkAuthStatus())
-//   }, [dispatch])
-
   return (
     <ThemeProvider>
         <Router>
+            <Toaster />
             <Navbar />
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
-                {/* <Route path="/products" element={<Products />} />
-                <Route path="/products/:id" element={<ProductDetail />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} /> */}
+                <Route path="/register" element={<Register />} />
+
+                {/* <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetail />} /> */}
 
                 {/* Protected Routes */}
-                {/* <Route
+                 <Route
                   path="/cart"
                   element={
                     <ProtectedRoute>
@@ -39,19 +43,12 @@ export default function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
+
+                {/* <Route
                   path="/checkout"
                   element={
                     <ProtectedRoute>
                       <Checkout />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
                     </ProtectedRoute>
                   }
                 />
@@ -81,9 +78,8 @@ export default function App() {
                     </AdminRoute>
                   }
                 /> */}
-                
                 <Route path="*" element={<ErrorPage />} />
-              </Routes> */
+              </Routes>
             <Footer />
         </Router>
     </ThemeProvider>

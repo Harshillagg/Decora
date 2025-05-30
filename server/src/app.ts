@@ -18,4 +18,12 @@ import userRouter from "./routes/user.route"
 
 app.use("/api/user", userRouter)
 
+import cartRouter from "./routes/cart.routes";
+
+app.use("/api/cart", cartRouter)
+
+import wishlistRouter from "./routes/wishlist.route";
+
+app.use("/api/wishlist", wishlistRouter)
+
 export default app
